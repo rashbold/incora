@@ -1,17 +1,7 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Feed from "./components/Feed";
 import { AuthProvider } from "./hooks/useAuth";
+import { RouterProvider } from "react-router-dom";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <div className="text-3xl">Hello world!</div>,
-  },
-  {
-    path: "/feed",
-    element: <Feed />,
-  },
-]);
+import router from "./router";
 
 function App() {
   return (
