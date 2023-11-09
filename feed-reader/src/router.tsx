@@ -5,8 +5,6 @@ import Feed from "./components/Feed";
 const withAuth = (Component: React.ComponentType<RouteProps>) => {
   return (props: RouteProps) => {
     const { user } = useAuth();
-    console.log("user", user);
-
     return user ? <Component {...props} /> : <h1>Have to login first!</h1>;
   };
 };
