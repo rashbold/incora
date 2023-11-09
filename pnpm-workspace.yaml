@@ -1,2 +1,2 @@
 packages:
-  - "feed-reader/*"
+  - "feed-reader"
