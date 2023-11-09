@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Feed from "./components/Feed";
+import { AuthProvider } from "./hooks/useAuth";
 
 const router = createBrowserRouter([
   {
@@ -15,7 +16,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </>
   );
 }
