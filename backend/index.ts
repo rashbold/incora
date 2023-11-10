@@ -2,7 +2,10 @@ import express from "express";
 import cors from "cors";
 import users from "./users.json";
 import feeds from "./data/feeds.json";
+import { XMLParser } from "fast-xml-parser";
 import fs from "fs";
+
+const parser = new XMLParser();
 
 const app = express();
 const port = 3900;
@@ -30,12 +33,46 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-app.get("/api/feeds/users/:userId", (req, res) => {
+app.get("/api/feeds/users/:userId", async (req, res) => {
   const { userId } = req.params;
   const userFeeds = feeds.filter(
     (feed: any) => feed.user_id === parseInt(userId)
   );
-  res.json(userFeeds);
+
+  const feedsToReturn: any[] = [];
+  for (const feed of userFeeds) {
+    await fetch(feed.url).then(async (res) => {
+      const xml = await res.text();
+      const parsed = parser.parse(xml);
+      parsed.id = feed.id;
+      feedsToReturn.push(parsed);
+    });
+  }
+
+  res.json(
+    feedsToReturn.map((feed: any) => {
+      return {
+        id: feed.id,
+        title: feed.rss.channel.title,
+        data: feed.rss.channel.lastBuildDate,
+      };
+    })
+  );
+});
+
+app.get("/api/feeds/:feedId", async (req, res) => {
+  const { feedId } = req.params;
+  const feed = feeds.find((feed: any) => feed.id === parseInt(feedId));
+  let items;
+  if (feed) {
+    await fetch(feed.url).then(async (res) => {
+      const xml = await res.text();
+      const parsed = parser.parse(xml);
+      items = parsed.rss.channel.item;
+    });
+    res.json(items);
+  }
+  res.sendStatus(404);
 });
 
 app.post("/api/feeds/users", (req, res) => {

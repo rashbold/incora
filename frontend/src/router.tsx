@@ -2,6 +2,7 @@ import { RouteProps, createBrowserRouter } from "react-router-dom";
 import useAuth from "./hooks/useAuth";
 import Feed from "./components/Feed";
 import LoginPage from "./components/LoginPage";
+import FeedList from "./components/FeedList";
 
 const withAuth = (Component: React.ComponentType<RouteProps>) => {
   return (props: RouteProps) => {
@@ -20,5 +21,9 @@ export default createBrowserRouter([
   {
     path: "/feed",
     element: <Feed />,
+  },
+  {
+    path: "/feed/:id",
+    element: <FeedList />,
   },
 ]);

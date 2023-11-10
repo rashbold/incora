@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 import useAuth from "../hooks/useAuth";
 
 const Feed = () => {
@@ -19,7 +21,9 @@ const Feed = () => {
     <>
       <h1>Feed</h1>
       {feedList.map((feed) => (
-        <div key={feed.id}>{feed.url}</div>
+        <>
+          <Link to={`/feed/${feed.id}`}>{feed.title}</Link>
+        </>
       ))}
     </>
   );
