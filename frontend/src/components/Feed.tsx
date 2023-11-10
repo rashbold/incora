@@ -1,29 +1,25 @@
-const feedList = [
-  {
-    id: 1,
-    title: "Feed 1",
-    date: new Date(),
-  },
-  {
-    id: 2,
-    title: "Feed 2",
-    date: new Date(),
-  },
-  {
-    id: 3,
-    title: "Feed 3",
-    date: new Date(),
-  },
-];
+import { useEffect, useState } from "react";
+import useAuth from "../hooks/useAuth";
 
 const Feed = () => {
+  const { user } = useAuth();
+  const [feedList, setFeedList] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch(`http://localhost:3900/api/feeds/users/${user.id}`).then((res) => {
+      if (res.ok) {
+        res.json().then((data) => {
+          console.log("feed", data);
+          setFeedList(data);
+        });
+      }
+    });
+  }, [user]);
   return (
     <>
       <h1>Feed</h1>
       {feedList.map((feed) => (
-        <div key={feed.id}>
-          {feed.title} - {feed.date.toISOString()}
-        </div>
+        <div key={feed.id}>{feed.url}</div>
       ))}
     </>
   );
