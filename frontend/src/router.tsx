@@ -1,11 +1,12 @@
 import { RouteProps, createBrowserRouter } from "react-router-dom";
 import useAuth from "./hooks/useAuth";
 import Feed from "./components/Feed";
+import LoginPage from "./components/LoginPage";
 
 const withAuth = (Component: React.ComponentType<RouteProps>) => {
   return (props: RouteProps) => {
     const { user } = useAuth();
-    return user ? <Component {...props} /> : <h1>Have to login first!</h1>;
+    return user ? <Component {...props} /> : <LoginPage />;
   };
 };
 

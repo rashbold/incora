@@ -13,16 +13,20 @@ interface IUser {
   password: string;
 }
 
+type UserCredentials = Pick<IUser, "name" | "password">;
+
 interface IAuthContext {
-  user?: IUser | null;
-  login: (user: IUser) => void;
+  user: IUser | null;
+  login: (credentials: UserCredentials) => Promise<void>;
   logout: () => void;
+  error: string | null;
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<IUser | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -31,10 +35,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  function login(user: IUser) {
-    setUser(user);
-    localStorage.setItem("user", JSON.stringify(user));
-  }
+  const login = async (credentials: UserCredentials) => {
+    setError(null);
+    const { name, password } = credentials;
+    fetch(`http://localhost:3900/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, password }),
+    }).then(async (res) => {
+      if (res.ok) {
+        const user = await res.json();
+        setUser(user);
+        localStorage.setItem("user", JSON.stringify(user));
+        setError(null);
+      } else {
+        setError("Invalid credentials");
+      }
+    });
+  };
 
   function logout() {
     setUser(null);
@@ -44,10 +64,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const memoedValue = useMemo(
     () => ({
       user,
+      error,
       login,
       logout,
     }),
-    [user]
+    [user, error]
   );
 
   return (
