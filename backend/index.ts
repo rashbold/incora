@@ -62,17 +62,20 @@ app.get("/api/feeds/users/:userId", async (req, res) => {
 
 app.get("/api/feeds/:feedId", async (req, res) => {
   const { feedId } = req.params;
-  const feed = feeds.find((feed: any) => feed.id === parseInt(feedId));
-  let items;
+  const feed = feeds.find((feed) => feed.id === parseInt(feedId));
   if (feed) {
-    await fetch(feed.url).then(async (res) => {
-      const xml = await res.text();
+    try {
+      const response = await fetch(feed.url);
+      const xml = await response.text();
       const parsed = parser.parse(xml);
-      items = parsed.rss.channel.item;
-    });
-    res.json(items);
+      const items = parsed.rss.channel.item;
+      res.json(items);
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  } else {
+    res.sendStatus(404);
   }
-  res.sendStatus(404);
 });
 
 app.post("/api/feeds/users", (req, res) => {
