@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 
-const Feed = () => {
+const Home = () => {
   const { user } = useAuth();
   const [feedList, setFeedList] = useState<any[]>([]);
 
@@ -75,10 +75,13 @@ const Feed = () => {
               <div className="flex-grow">
                 <Link
                   to={`/feed/${feed.id}`}
-                  className="text-lg font-medium text-indigo-600 hover:text-indigo-500"
+                  className="text-lg font-medium text-indigo-600 hover:text-indigo-500 truncate"
                 >
                   {feed.title}
                 </Link>
+              </div>
+              <div className="flex-shrink-0 ml-4">
+                <span className="text-sm text-gray-500">{feed.date}</span>
               </div>
               <div className="flex-shrink-0">
                 <button
@@ -106,4 +109,4 @@ const Feed = () => {
   );
 };
 
-export default Feed;
+export default Home;
