@@ -26,6 +26,19 @@ const Feed = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-4xl font-bold text-center my-6">Feed</h1>
+      <div className="mb-5">
+        <input
+          type="text"
+          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-10 pl-2"
+          placeholder="Add new feed..."
+          onKeyUp={(e) => {
+            if (e.key === "Enter") {
+              // Implement the add feed logic here
+              console.log("Add feed");
+            }
+          }}
+        />
+      </div>
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <ul className="divide-y divide-gray-200">
           {feedList.map((feed) => (
