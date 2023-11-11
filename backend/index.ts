@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import users from "./users.json";
+import users from "./data/users.json";
 import feeds from "./data/feeds.json";
 import Parser from "rss-parser";
 import fs from "fs";

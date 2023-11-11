@@ -3,5 +3,8 @@
   "version": "0.0.1",
   "description": "Test assignment",
   "author": "Bohdan Dhzus",
+  "scripts": {
+    "dev": "pnpm --stream -r dev"
+  },
   "private": true
 }
