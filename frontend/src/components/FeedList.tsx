@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import FeedItem from "./FeedItem";
 
 const FeedList = () => {
   const { id } = useParams();
   const [feedItems, setFeedItems] = useState<any[]>([]);
+  const [search] = useSearchParams();
+  const feedItem = search.get("item");
 
   useEffect(() => {
     fetch(`http://localhost:3900/api/feeds/${id}`).then((res) => {
@@ -16,9 +19,17 @@ const FeedList = () => {
   }, [id]);
   return (
     <>
-      {feedItems.map((item: any) => (
-        <div key={item.id}>{item.title}</div>
-      ))}
+      {!feedItem ? (
+        feedItems.map((item: any, i: number) => (
+          <div>
+            <Link key={i} to={`/feed/${id}?item=${i}`}>
+              {item.title}
+            </Link>
+          </div>
+        ))
+      ) : (
+        <FeedItem item={feedItems[Number(feedItem)]} />
+      )}
     </>
   );
 };
