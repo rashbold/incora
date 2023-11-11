@@ -2,10 +2,10 @@ import express from "express";
 import cors from "cors";
 import users from "./users.json";
 import feeds from "./data/feeds.json";
-import { XMLParser } from "fast-xml-parser";
+import Parser from "rss-parser";
 import fs from "fs";
 
-const parser = new XMLParser();
+let parser = new Parser();
 
 const app = express();
 const port = 3900;
@@ -41,20 +41,17 @@ app.get("/api/feeds/users/:userId", async (req, res) => {
 
   const feedsToReturn: any[] = [];
   for (const feed of userFeeds) {
-    await fetch(feed.url).then(async (res) => {
-      const xml = await res.text();
-      const parsed = parser.parse(xml);
-      parsed.id = feed.id;
-      feedsToReturn.push(parsed);
-    });
+    const parsed = await parser.parseURL(feed.url);
+    parsed.id = feed.id;
+    feedsToReturn.push(parsed);
   }
 
   res.json(
     feedsToReturn.map((feed: any) => {
       return {
         id: feed.id,
-        title: feed.rss.channel.title,
-        data: feed.rss.channel.lastBuildDate,
+        title: feed.title,
+        date: feed.lastBuildDate,
       };
     })
   );
@@ -65,10 +62,8 @@ app.get("/api/feeds/:feedId", async (req, res) => {
   const feed = feeds.find((feed) => feed.id === parseInt(feedId));
   if (feed) {
     try {
-      const response = await fetch(feed.url);
-      const xml = await response.text();
-      const parsed = parser.parse(xml);
-      const items = parsed.rss.channel.item;
+      const parsed = await parser.parseURL(feed.url);
+      const items = parsed.items;
       res.json(items);
     } catch (error) {
       res.status(500).json({ error: error });
