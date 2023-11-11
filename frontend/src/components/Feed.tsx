@@ -8,19 +8,45 @@ const Feed = () => {
   const [feedList, setFeedList] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(`http://localhost:3900/api/feeds/users/${user.id}`).then((res) => {
+    fetch(`http://localhost:3900/api/feeds/users/${user!.id}`).then((res) => {
       if (res.ok) {
         res.json().then((data) => {
-          console.log("feed", data);
           setFeedList(data);
         });
       }
     });
   }, [user]);
 
-  const removeFeed = (feedId: number) => {
-    // Implement the remove feed logic here
-    console.log(`Remove feed with id: ${feedId}`);
+  const handleRemoveFeed = (feedId: number) => {
+    fetch(`http://localhost:3900/api/feeds/${feedId}`, {
+      method: "DELETE",
+    }).then((res) => {
+      if (res.ok) {
+        setFeedList(feedList.filter((feed) => feed.id !== feedId));
+      }
+    });
+  };
+
+  const handleAddFeed = (url: string) => {
+    try {
+      new URL(url);
+    } catch (e) {
+      console.log("Invalid URL");
+      return;
+    }
+    fetch(`http://localhost:3900/api/feeds/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user!.id, url }),
+    }).then(async (res) => {
+      if (res.ok) {
+        const feed = await res.json();
+        feed.title = url;
+        setFeedList([...feedList, feed]);
+      }
+    });
   };
 
   return (
@@ -33,8 +59,8 @@ const Feed = () => {
           placeholder="Add new feed..."
           onKeyUp={(e) => {
             if (e.key === "Enter") {
-              // Implement the add feed logic here
-              console.log("Add feed");
+              handleAddFeed(e.currentTarget.value);
+              e.currentTarget.value = "";
             }
           }}
         />
@@ -56,7 +82,7 @@ const Feed = () => {
               </div>
               <div className="flex-shrink-0">
                 <button
-                  onClick={() => removeFeed(feed.id)}
+                  onClick={() => handleRemoveFeed(feed.id)}
                   className="w-8 h-8 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <svg
