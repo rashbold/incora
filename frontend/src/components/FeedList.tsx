@@ -17,20 +17,31 @@ const FeedList = () => {
       }
     });
   }, [id]);
+
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       {!feedItem ? (
-        feedItems.map((item: any, i: number) => (
-          <div>
-            <Link key={i} to={`/feed/${id}?item=${i}`}>
-              {item.title}
-            </Link>
-          </div>
-        ))
+        <div className="bg-white shadow overflow-hidden sm:rounded-md m-5">
+          <ul className="divide-y divide-gray-200">
+            {feedItems.map((item: any, i: number) => (
+              <li
+                key={i}
+                className="px-4 py-4 flex items-center sm:flex-row flex-col m-2"
+              >
+                <Link
+                  to={`/feed/${id}?item=${i}`}
+                  className="text-lg font-medium text-indigo-600 hover:text-indigo-500 flex-grow"
+                >
+                  {item.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : (
         <FeedItem item={feedItems[Number(feedItem)]} />
       )}
-    </>
+    </div>
   );
 };
 
